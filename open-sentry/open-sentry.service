@@ -1,0 +1,18 @@
+[Unit]
+Description=SafeRide Open-Sentry security agent
+After=sysrepod.service
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sh -c "if [ ! -e /etc/sysrepo/yang/ietf-netconf-acm@2012-02-22.yang ]; then /usr/bin/sysrepoctl --install --yang=/etc/sentry/yang/ietf-netconf-acm@2012-02-22.yang; fi"
+ExecStartPre=/bin/sh -c "if [ ! -e /etc/sysrepo/yang/ietf-netconf-notifications@2012-02-06.yang ]; then /usr/bin/sysrepoctl --install --yang=/etc/sentry/yang/ietf-netconf-notifications@2012-02-06.yang; fi"
+ExecStartPre=/bin/sh -c "if [ ! -e /etc/sysrepo/yang/ietf-netconf@2011-06-01.yang ]; then /usr/bin/sysrepoctl --install --yang=/etc/sentry/yang/ietf-netconf@2011-06-01.yang; fi"
+ExecStartPre=/bin/sh -c "if [ ! -e /etc/sysrepo/yang/notifications@2008-07-14.yang ]; then /usr/bin/sysrepoctl --install --yang=/etc/sentry/yang/notifications@2008-07-14.yang; fi"
+ExecStartPre=/bin/sh -c "if [ ! -e /etc/sysrepo/yang/saferide.yang ]; then /usr/bin/sysrepoctl --install --yang=/etc/sentry/yang/saferide.yang; fi"
+ExecStart=/usr/bin/open_sentry
+Restart=on-failure
+RestartSec=1
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

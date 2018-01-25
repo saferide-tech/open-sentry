@@ -1,0 +1,325 @@
+module saferide {
+
+  namespace "http://saferide.io/ns/saferide";
+  prefix saferide;
+
+  import ietf-inet-types {
+    prefix inet;
+  }
+
+  container control {
+    description "control";
+
+    leaf engine {
+      description "engine control (start, stop, reload)";
+      type string {
+        pattern "start|stop|reload";
+      }
+      default "start";
+    }
+  }
+
+  container config {
+    description "configuration";
+
+    container sr_actions {
+      description "actions";
+
+      list list_actions {
+        key name;
+        max-elements 4096;
+        description "action configuration";
+
+        leaf name {
+          description "action name";
+          type string {
+            length "min .. 31";
+          }
+        }
+
+        leaf action {
+          type string {
+            pattern "allow|drop";
+          }
+          description "action (allow|drop)";
+          mandatory true;
+        }
+
+        container log {
+          description "action logging";
+
+          leaf log_facility {
+            description "action logging facility (syslog|file|none)";
+            type string {
+              pattern "syslog|file|none";
+            }
+            default "syslog";
+          }
+
+          leaf log_severity {
+            description "action logging severity (none|critical|error|warning|info|debug)";
+            type string {
+              pattern "none|critical|error|warning|info|debug";
+            }
+            default "error";
+          }
+        }
+
+        leaf black-list {
+          description "action black-list: (true|false)";
+          type boolean;
+          default false;
+        }
+
+        leaf terminate {
+          description "action terminate: (true|false)";
+          type boolean;
+          default false;
+        }
+      }
+    }
+
+    container net {
+      description "network configuration";
+
+      container ip {
+        description "network ip configuration";
+
+        list rule {
+          key num;
+          max-elements 4096;
+          description "network ip rules configuration";
+
+          leaf num {
+            type uint16 {
+              range "0 .. 4095";
+            }
+            description "rule number 0 .. 4095";
+          }
+
+          leaf action {
+            description "associate this rule with action $name";
+            type leafref {
+              path "/config/sr_actions/list_actions/name";
+            }
+			mandatory true;
+          }
+
+          list tuple {
+            description "specify the rule tuple";
+            key id;
+
+            leaf id {
+              description "";
+              type uint32;
+            }
+
+            leaf srcaddr {
+              type inet:ipv4-address;
+              description "IP source address";
+              default 0.0.0.0;
+            }
+
+            leaf srcnetmask {
+              type inet:ipv4-address;
+              description "IP source netmask";
+              default 255.255.255.255;
+            }
+
+            leaf dstaddr {
+              type inet:ipv4-address;
+              description "IP Dest address";
+              default 0.0.0.0;
+            }
+
+            leaf dstnetmask {
+              type inet:ipv4-address;
+              description "IP Dest netmask";
+              default 255.255.255.255;
+            }
+
+            leaf srcport {
+              type inet:port-number;
+              description "Source port number";
+              default 0;
+            }
+
+            leaf dstport {
+              type inet:port-number;
+              description "Dest port number";
+              default 0;
+            }
+
+            leaf proto {
+              type uint8 {
+                range "0 .. 255";
+              }
+              description "Protocol type number (6-TCP, 17-UDP, 0-255)";
+              default 0;
+            }
+
+            leaf user {
+              description "user name";
+              type string;
+              default "";
+            }
+
+            leaf program {
+              description "program name";
+              type string;
+              default "";
+            }
+
+            leaf max_rate {
+              description "max access rate";
+              type uint32;
+              default 0;
+            }
+          }
+        }
+      }
+
+      container can {
+        description "network can configuration";
+
+        list rule {
+          key num;
+          max-elements 4096;
+          description "can rules configuration";
+
+          leaf num {
+            type uint16 {
+              range "0 .. 4095";
+            }
+            description "rule number 0 .. 4095";
+          }
+
+          leaf action {
+            description "associate this rule with action $name";
+            type leafref {
+              path "/config/sr_actions/list_actions/name";
+            }
+            mandatory true;
+          }
+
+          list tuple {
+            description "specify the rule tuple";
+            key id;
+
+            leaf id {
+              description "";
+              type uint32;
+            }
+
+            leaf msg_id {
+              type string {
+                pattern "any|[0-1][0-9a-fA-F]{7}|[0-7][0-9a-fA-F]{2}";
+                length "3|8";
+              }
+              description "Can msg id (hex 11|29 bits)";
+              mandatory true;
+            }
+
+            leaf direction {
+                description "can msg direction (out, in, both)";
+                type string {
+                    pattern "out|in|both";
+                }
+                mandatory true;
+            }
+
+            leaf user {
+              description "user name";
+              type string;
+              default "";
+            }
+
+            leaf program {
+              description "program name";
+              type string;
+              default "";
+            }
+
+            leaf max_rate {
+              description "max access rate";
+              type uint32;
+              default 0;
+            }
+          }
+        }
+      }
+    }
+
+    container system {
+      description "system configuration";
+
+      container file {
+        description "file permissions";
+
+        list rule {
+          key num;
+          max-elements 4096;
+          description "system file rule configuration";
+
+          leaf num {
+            type uint16 {
+              range "0 .. 4095";
+            }
+            description "rule number 0 .. 4095";
+          }
+
+          leaf action {
+            description "associate this rule with an action $name";
+            type leafref {
+              path "/config/sr_actions/list_actions/name";
+            }
+            mandatory true;
+          }
+
+
+          list tuple {
+            description "specify the rule tuple";
+            key id;
+
+            leaf id {
+              description "";
+              type uint32;
+            }
+
+            leaf filename {
+              description "filename";
+              type string;
+              mandatory true;
+            }
+
+            leaf permission {
+              description "file permission: xxx (x = 0...7)";
+              type string {
+                pattern "[0-7]{3}";
+              }
+              mandatory true;
+            }
+
+            leaf user {
+              description "user name";
+              type string;
+              default "";
+            }
+
+            leaf program {
+              description "program name";
+              type string;
+              default "";
+            }
+
+            leaf max_rate {
+              description "max access rate";
+              type uint32;
+              default 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
