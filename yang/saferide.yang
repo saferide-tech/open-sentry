@@ -228,6 +228,12 @@ module saferide {
                 mandatory true;
             }
 
+            leaf interface {
+              description "interface name";
+              type string;
+              default "";
+            }
+
             leaf user {
               description "user name";
               type string;
