@@ -6,7 +6,7 @@
 #define XPATH_MAX_LEN           512
 #define USER_NAME_SIZE          128
 #define PROG_NAME_SIZE          256
-#define INTERFACE_SIZE          64
+#define INTERFACE_SIZE          16
 
 #define SENTRY_ERR (-1)
 #define SENTRY_OK   0
