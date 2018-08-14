@@ -12,6 +12,7 @@ typedef struct {
     unsigned int    id;
     unsigned int    msg_id;
     unsigned char   direction;
+    char            interface[INTERFACE_SIZE];
     char            user[USER_NAME_SIZE];
     char            program[PROG_NAME_SIZE];
     unsigned int    max_rate;

@@ -77,6 +77,7 @@ void can_rule_display(can_rule_t *ptr)
         sentry_debug("\t\tdirection in\n");
     else if (ptr->tuple.direction == SENTRY_DIR_OUT)
         sentry_debug("\t\tdirection out\n");
+    sentry_debug("\t\tinterface %s\n", ptr->tuple.interface);
     sentry_debug("\t\tuser %s\n", ptr->tuple.user);
     sentry_debug("\t\tprogram %s\n", ptr->tuple.program);
     sentry_debug("\t\tmax_rate %d\n", ptr->tuple.max_rate);
@@ -173,6 +174,10 @@ sr_val_t *values = NULL;
                         strlen(values[i].data.string_val)) == 0)
                     tuple->direction = SENTRY_DIR_OUT;
             }
+
+            else if (strncmp(value_name, "interface", len) == 0)
+                strncpy(tuple->interface, values[i].data.string_val,
+                    INTERFACE_SIZE);
 
             else if (strncmp(value_name, "user", len) == 0)
                 strncpy(tuple->user, values[i].data.string_val,
