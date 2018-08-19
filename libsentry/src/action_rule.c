@@ -83,10 +83,11 @@ static int action_str_to_enum(char *action)
  * in param:    char *facility - facility name.
  * return:      int. SENTRY_ERR on error.
  **********************************************************************/
-static char *sentry_log_facility_str[LOG_TOTAL] = {
+static char *sentry_log_facility_str[] = {
     "none",
     "syslog",
     "file",
+    NULL,
 };
 
 static int facility_str_to_enum(char *facility)
@@ -106,13 +107,14 @@ static int facility_str_to_enum(char *facility)
  * in param:    char* severity - severity name.
  * return:      int. SENTRY_ERR on error.
  **********************************************************************/
-char *sentry_log_severity_str[LOG_SEVERITY_TOTAL] = {
+char *sentry_log_severity_str[] = {
     "none",
     "critical",
     "error",
     "warning",
     "info",
     "debug",
+    NULL,
 };
 
 static int severity_str_to_enum(char *severity)
@@ -124,6 +126,18 @@ static int severity_str_to_enum(char *severity)
             return i;
 
     return SENTRY_ERR;
+}
+
+int is_action_value_valid(char *table[], char *value)
+{
+    int i;
+
+    for (i = 0; table[i]; i++) {
+        if (!strcmp(table[i], value))
+           return 1;
+    }
+
+   return 0;
 }
 
 /***********************************************************************
@@ -181,19 +195,32 @@ static int action_extract_log(sr_session_ctx_t *session,
 
             len = strlen(value_name);
 
-            if (strncmp(value_name, "log_facility", len) == 0)
+            if (strncmp(value_name, "log_facility", len) == 0) {
+                if (!is_action_value_valid(sentry_log_facility_str, values[i].data.string_val)) {
+                      printf("ERROR: log facility is invalid :%s: \n", values[i].data.string_val);
+                      rc = SR_ERR_INVAL_ARG;
+                      goto out;
+                }
                 action->log_facility = 
                     facility_str_to_enum(values[i].data.string_val);
+            }
 
-            if (strncmp(value_name, "log_severity", len) == 0)
+            if (strncmp(value_name, "log_severity", len) == 0) {
+                 if (!is_action_value_valid(sentry_log_severity_str, values[i].data.string_val)) {
+                      printf("ERROR: log serverity is invalid :%s: \n", values[i].data.string_val);
+                      rc = SR_ERR_INVAL_ARG;
+                      goto out;
+                }
                 action->log_severity = 
                     severity_str_to_enum(values[i].data.string_val);
+            }
         }
     }
 
+out:
     sr_free_values(values, count);
 
-    return SENTRY_OK;
+    return rc;
 }
 
 /***********************************************************************
