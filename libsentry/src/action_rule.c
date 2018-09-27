@@ -358,3 +358,4 @@ int action_get_name(action_t *action, char *xpath)
 
     return SENTRY_OK;
 }
+
