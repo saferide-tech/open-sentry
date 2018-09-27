@@ -14,6 +14,7 @@ typedef enum {
 typedef bool (*list_search_cb) (void *candidate, void *data);
 typedef void (*list_print_cb)  (void *data);
 typedef int  (*list_compare_cb)(void *a, void *b);
+typedef void  (*list_exec_cb)(void *data, void *param);
 
 /* list element */
 typedef struct node_t {
@@ -37,6 +38,7 @@ node_t*  list_add_sorted(list_t *list, void *data);
 void*    list_remove_node(list_t *list, node_t *nd);
 node_t*  list_search_node(list_t *list, void *data);
 void     list_print(list_t *list);
+void     list_exec_for_each(list_t *list, list_exec_cb cb, void *param);
 
 #endif /* LIST_H */
 

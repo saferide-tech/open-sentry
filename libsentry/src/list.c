@@ -219,4 +219,24 @@ void list_print(list_t *list)
     }
 }
 
+/***********************************************************************
+ * function: list_exec_for_each    
+ * description: go over all list elements and invoke the cb provided
+ * in param:    list_t *list - the list to print.
+ * return:      void.
+ **********************************************************************/
+void list_exec_for_each(list_t *list, list_exec_cb cb, void *param)
+{
+    node_t *ptr = NULL;
+
+    if (!list || !list->print)
+        return;
+
+    ptr = list->head;
+    while(ptr) {
+	cb(ptr->data, param);
+        ptr = ptr->next;
+    }
+}
+
 
