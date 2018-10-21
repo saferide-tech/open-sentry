@@ -322,6 +322,9 @@ static void sentry_notify_current_config(sr_session_ctx_t *sess, int op)
     }
 
     sr_free_values(values, count);
+
+    /* notify done */
+    sentry_cb(0, 0, NULL);
 }
 
 /***********************************************************************
