@@ -286,6 +286,9 @@ static int saferide_change_cb(sr_session_ctx_t  *session,
 
     during_modification = false;
 
+    /* notify done */
+    sentry_cb(0, 0, NULL);
+
     return SR_ERR_OK;
 }
 
