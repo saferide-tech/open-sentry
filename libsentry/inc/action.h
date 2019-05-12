@@ -2,7 +2,6 @@
 #define ACTION_H
 
 #include "sentry.h"
-#include "sysrepo.h"
 
 #define ACTION_STR_SIZE     32
 

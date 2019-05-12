@@ -19,8 +19,6 @@ INCLUDES	+= -I./inc
 OBJS		:= $(addprefix $(OBJDIR)/,$(SRCS:.c=.o))
 DEPS		:= $(OBJS:.o=.d)
 
-LIBS		:= -lsysrepo
-
 CFLAGS 		+= -MMD -Wall -fPIC
 
 ifdef DEBUG
